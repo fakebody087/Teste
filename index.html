@@ -471,12 +471,48 @@ fotoInput.addEventListener('change', async () => {
   }
 });
 
-/* ---------- API helpers (tudo via GET, evita CORS) ---------- */
-async function apiCall(params) {
-  const url = new URL(API_URL);
-  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v ?? ''));
-  const res = await fetch(url.toString());
-  return res.json();
+/* ---------- API helpers (JSONP — contorna CORS do Apps Script) ---------- */
+let jsonpCounter = 0;
+
+function apiCall(params) {
+  return new Promise((resolve, reject) => {
+    const callbackName = '__jsonp_cb_' + (jsonpCounter++) + '_' + Date.now();
+    const url = new URL(API_URL);
+    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v ?? ''));
+    url.searchParams.set('callback', callbackName);
+
+    const script = document.createElement('script');
+    let settled = false;
+
+    const cleanup = () => {
+      delete window[callbackName];
+      script.remove();
+      clearTimeout(timeoutId);
+    };
+
+    window[callbackName] = (data) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(data);
+    };
+
+    const timeoutId = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new Error('Tempo esgotado a contactar o Apps Script.'));
+    }, 15000);
+
+    script.src = url.toString();
+    script.onerror = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new Error('Não foi possível contactar o Apps Script.'));
+    };
+    document.body.appendChild(script);
+  });
 }
 
 async function loadItems() {
