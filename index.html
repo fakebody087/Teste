@@ -1,745 +1,634 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Modelos</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Catálogo</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #0F0E13;
-    --surface: #1A1922;
-    --surface2: #24222E;
-    --border: #2E2B3C;
-    --border-strong: #3E3A50;
-    --text: #F0EEF5;
-    --text-2: #A8A2BF;
-    --text-3: #6B6580;
-    --accent: #8B5CF6;
-    --accent-bg: rgba(139,92,246,0.12);
-    --accent2: #EC4899;
-    --success: #34D399;
-    --danger: #EF4444;
-    --danger-bg: rgba(239,68,68,0.12);
-    --radius: 8px;
-    --radius-lg: 12px;
+    --bg-0: #0f0a1a;
+    --bg-1: #1a1230;
+    --panel: #201735;
+    --panel-border: #34244f;
+    --accent-1: #b24bf3;
+    --accent-2: #ff4fa3;
+    --accent-grad: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    --text-0: #f3eefc;
+    --text-1: #b7a9d6;
+    --text-2: #7c6d9c;
+    --danger: #ff5c7a;
+    --radius: 14px;
+    --font-display: 'Fraunces', 'Georgia', serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
+
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap');
+
+  * { box-sizing: border-box; }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg);
-    color: var(--text);
+    margin: 0;
+    font-family: var(--font-body);
+    background: radial-gradient(ellipse at top left, var(--bg-1) 0%, var(--bg-0) 60%);
+    color: var(--text-0);
     min-height: 100vh;
-    font-size: 14px;
-    line-height: 1.5;
   }
 
-  .topbar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 1.25rem;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  .topbar-icon {
-    width: 30px; height: 30px;
-    background: linear-gradient(135deg,var(--accent),var(--accent2));
-    border-radius: var(--radius);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 15px;
-  }
-  .topbar-title { font-size: 15px; font-weight: 600; }
-
-  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-
-  .view-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 12px;
-    color: var(--text-3);
-    font-family: inherit;
-    transition: all 0.15s;
-  }
-  .view-btn:hover { color: var(--text-2); border-color: var(--border-strong); }
-  .view-btn.active { background: var(--accent-bg); color: var(--accent); border-color: var(--accent); }
-
-  .sync-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 11px; color: var(--text-3);
-    padding: 3px 8px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-  }
-  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
-  .sync-dot.syncing { background: #FBBF24; animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-  .layout {
-    display: flex;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1.25rem;
-    gap: 1.25rem;
-    min-height: calc(100vh - 52px);
+  .app {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    min-height: 100vh;
   }
 
+  @media (max-width: 860px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { order: 2; }
+    .main { order: 1; }
+  }
+
+  /* ---------- SIDEBAR ---------- */
   .sidebar {
-    width: 340px;
-    flex-shrink: 0;
+    background: linear-gradient(180deg, var(--panel) 0%, var(--bg-1) 100%);
+    border-right: 1px solid var(--panel-border);
+    padding: 32px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
   }
 
-  .main { flex: 1; min-width: 0; }
-
-  .form-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 1.25rem;
-    position: sticky;
-    top: calc(52px + 1.25rem);
+  .brand {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    background: var(--accent-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
-  .form-section-label {
-    font-size: 11px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.06em;
-    color: var(--text-3);
-    margin-bottom: 12px;
+  .brand-sub {
+    font-size: 12.5px;
+    color: var(--text-2);
+    margin-top: -14px;
+    letter-spacing: 0.4px;
   }
-  .form-section-label.editing { color: var(--accent2); }
 
-  .form-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
-  .form-label { font-size: 12px; font-weight: 500; color: var(--text-2); }
-  .form-input {
-    padding: 8px 10px;
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius);
-    font-size: 14px;
-    color: var(--text);
-    background: var(--surface2);
-    font-family: inherit;
+  .field-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-2);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  input[type="text"], input[type="url"] {
     width: 100%;
-    transition: border-color 0.15s;
-  }
-  .form-input:focus {
+    background: var(--bg-0);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 11px 13px;
+    color: var(--text-0);
+    font-family: var(--font-body);
+    font-size: 14px;
     outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(139,92,246,0.15);
+    transition: border-color .15s ease;
   }
-  .form-input::placeholder { color: var(--text-3); }
+  input[type="text"]:focus, input[type="url"]:focus {
+    border-color: var(--accent-1);
+  }
 
-  .photo-upload {
-    border: 1px dashed var(--border-strong);
+  .field { display: flex; flex-direction: column; }
+
+  .upload-zone {
+    border: 1.5px dashed var(--panel-border);
     border-radius: var(--radius);
-    padding: 12px;
+    padding: 16px;
     text-align: center;
     cursor: pointer;
-    transition: all 0.15s;
-    background: var(--surface2);
+    transition: border-color .15s ease, background .15s ease;
     position: relative;
-    min-height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 4px;
+    color: var(--text-2);
+    font-size: 13px;
   }
-  .photo-upload:hover { border-color: var(--accent); background: var(--accent-bg); }
-  .photo-upload.has-photo { padding: 4px; }
-  .photo-upload img {
+  .upload-zone:hover { border-color: var(--accent-1); background: rgba(178,75,243,0.06); }
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+  }
+  .upload-preview {
+    width: 100%;
     max-height: 140px;
-    max-width: 100%;
-    border-radius: 4px;
-    object-fit: contain;
-  }
-  .photo-upload .upload-hint { font-size: 12px; color: var(--text-3); }
-  .photo-upload .upload-hint-icon { font-size: 22px; }
-  .photo-upload input[type="file"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-  }
-  .photo-remove {
-    position: absolute;
-    top: 4px; right: 4px;
-    background: rgba(0,0,0,0.7);
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 22px; height: 22px;
-    font-size: 12px;
-    cursor: pointer;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-top: 10px;
     display: none;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
   }
-  .photo-upload.has-photo .photo-remove { display: flex; }
 
-  .form-actions { display: flex; gap: 8px; margin-top: 12px; }
-
-  .btn-primary {
-    flex: 1;
-    padding: 9px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: #fff;
+  .btn {
     border: none;
-    border-radius: var(--radius);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform .12s ease, opacity .12s ease;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary {
+    background: var(--accent-grad);
+    color: #17101f;
+  }
+  .btn-primary:hover { opacity: 0.92; }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--panel-border);
+    color: var(--text-1);
+  }
+  .btn-ghost:hover { border-color: var(--accent-1); color: var(--text-0); }
+
+  .form-actions { display: flex; gap: 10px; }
+  .form-actions .btn { flex: 1; }
+
+  .status-msg {
+    font-size: 12.5px;
+    color: var(--text-2);
+    min-height: 16px;
+  }
+  .status-msg.error { color: var(--danger); }
+  .status-msg.success { color: #6ee7b7; }
+
+  /* ---------- MAIN ---------- */
+  .main {
+    padding: 32px 36px;
+  }
+
+  .main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 26px;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .main-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+  }
+  .main-count {
+    color: var(--text-2);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .view-toggle {
+    display: flex;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 3px;
+  }
+  .view-toggle button {
+    border: none;
+    background: transparent;
+    color: var(--text-2);
+    padding: 7px 14px;
+    border-radius: 7px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    font-family: inherit;
-    transition: filter 0.15s;
   }
-  .btn-primary:hover { filter: brightness(1.1); }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; filter: none; }
+  .view-toggle button.active {
+    background: var(--accent-grad);
+    color: #17101f;
+  }
 
-  .btn-secondary {
+  .search-input {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
     padding: 9px 14px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    color: var(--text-0);
     font-size: 13px;
-    color: var(--text-2);
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s;
+    min-width: 200px;
   }
-  .btn-secondary:hover { background: var(--border); color: var(--text); }
-  .btn-secondary.hidden { display: none; }
-
-  /* ─────────── ITEMS ─────────── */
+  .search-input:focus { outline: none; border-color: var(--accent-1); }
 
   .empty-state {
-    background: var(--surface);
-    border: 1px dashed var(--border-strong);
-    border-radius: var(--radius-lg);
-    padding: 2rem;
     text-align: center;
-    color: var(--text-3);
-    font-size: 14px;
+    padding: 80px 20px;
+    color: var(--text-2);
   }
-  .empty-state-icon { font-size: 36px; margin-bottom: 8px; opacity: 0.5; }
-
-  .items-count {
-    font-size: 12px;
-    color: var(--text-3);
-    margin-bottom: 10px;
+  .empty-state .glyph {
+    font-family: var(--font-display);
+    font-size: 44px;
+    background: var(--accent-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 6px;
   }
 
   /* Grid view */
-  .items-grid {
+  .items.grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 12px;
+    gap: 18px;
   }
-
-  .item-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
     overflow: hidden;
-    transition: transform 0.15s, border-color 0.15s;
+    transition: transform .15s ease, border-color .15s ease;
   }
-  .item-card:hover { transform: translateY(-2px); border-color: var(--accent); }
-
-  .item-card .card-img {
+  .card:hover { transform: translateY(-3px); border-color: var(--accent-1); }
+  .card .photo {
     width: 100%;
     aspect-ratio: 3/4;
     object-fit: cover;
+    background: var(--bg-0);
     display: block;
-    background: var(--surface2);
   }
-  .item-card .card-img-placeholder {
-    width: 100%;
-    aspect-ratio: 3/4;
+  .card .photo.placeholder {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--surface2);
-    color: var(--text-3);
-    font-size: 28px;
-  }
-
-  .item-card .card-body {
-    padding: 10px 12px 12px;
-  }
-  .item-card .card-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .item-card .card-link {
-    display: block;
-    font-size: 12px;
-    color: var(--accent);
-    margin-top: 4px;
-    text-decoration: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .item-card .card-link:hover { text-decoration: underline; }
-
-  .item-card .card-actions {
-    display: flex;
-    gap: 4px;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid var(--border);
-  }
-  .item-card .card-btn {
-    flex: 1;
-    padding: 4px;
-    font-size: 11px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    cursor: pointer;
     color: var(--text-2);
-    font-family: inherit;
-    transition: all 0.1s;
-    text-align: center;
+    font-family: var(--font-display);
+    font-size: 30px;
   }
-  .item-card .card-btn:hover { border-color: var(--border-strong); color: var(--text); }
-  .item-card .card-btn.danger:hover { background: var(--danger-bg); color: var(--danger); border-color: var(--danger); }
+  .card-body { padding: 12px 14px; }
+  .card-name { font-weight: 600; font-size: 14.5px; margin-bottom: 3px; }
+  .card-link {
+    font-size: 12px;
+    color: var(--accent-1);
+    text-decoration: none;
+    word-break: break-all;
+  }
+  .card-link:hover { text-decoration: underline; }
+  .card-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .icon-btn {
+    border: 1px solid var(--panel-border);
+    background: var(--bg-0);
+    color: var(--text-1);
+    border-radius: 7px;
+    padding: 5px 9px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .icon-btn:hover { border-color: var(--accent-1); color: var(--text-0); }
+  .icon-btn.danger:hover { border-color: var(--danger); color: var(--danger); }
 
   /* List view */
-  .items-list { display: flex; flex-direction: column; gap: 8px; }
-
-  .item-row {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 10px 14px;
+  .items.list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .items.list .card {
     display: flex;
     align-items: center;
     gap: 14px;
-    transition: border-color 0.15s;
+    padding: 10px 14px;
   }
-  .item-row:hover { border-color: var(--border-strong); }
-
-  .item-row .row-img {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius);
-    object-fit: cover;
+  .items.list .card .photo {
+    width: 56px;
+    height: 56px;
+    aspect-ratio: unset;
+    border-radius: 10px;
     flex-shrink: 0;
-    background: var(--surface2);
   }
-  .item-row .row-img-placeholder {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius);
-    flex-shrink: 0;
-    background: var(--surface2);
+  .items.list .card-body {
+    padding: 0;
+    flex: 1;
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    color: var(--text-3);
+    justify-content: space-between;
+    gap: 12px;
   }
+  .items.list .card-actions { margin-top: 0; }
 
-  .item-row .row-body { flex: 1; min-width: 0; }
-  .item-row .row-name { font-size: 14px; font-weight: 600; }
-  .item-row .row-link {
-    font-size: 12px;
-    color: var(--accent);
-    text-decoration: none;
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .item-row .row-link:hover { text-decoration: underline; }
-
-  .item-row .row-actions { display: flex; gap: 4px; flex-shrink: 0; }
-  .item-row .row-btn {
-    padding: 4px 8px;
-    font-size: 11px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    cursor: pointer;
-    color: var(--text-2);
-    font-family: inherit;
-    transition: all 0.1s;
-  }
-  .item-row .row-btn:hover { border-color: var(--border-strong); color: var(--text); }
-  .item-row .row-btn.danger:hover { background: var(--danger-bg); color: var(--danger); border-color: var(--danger); }
-
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: #1A1922;
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 10px 20px; border-radius: 20px;
-    font-size: 13px; font-weight: 500;
-    opacity: 0; transition: opacity 0.2s;
-    pointer-events: none; z-index: 999;
-    white-space: nowrap; max-width: 90vw;
-  }
-  .toast.show { opacity: 1; }
-
-  @media (max-width: 800px) {
-    .layout { flex-direction: column; }
-    .sidebar { width: 100%; }
-    .form-card { position: static; }
-    .items-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-  }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 4px; }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="topbar-icon">✦</div>
-  <div class="topbar-title">Modelos</div>
-  <div class="topbar-right">
-    <button class="view-btn active" id="view-grid" onclick="setView('grid')">❐ Grade</button>
-    <button class="view-btn" id="view-list" onclick="setView('list')">☰ Lista</button>
-    <div class="sync-badge" id="sync-badge">
-      <div class="sync-dot" id="sync-dot"></div>
-      <span id="sync-label">Planilha</span>
+<div class="app">
+  <aside class="sidebar">
+    <div>
+      <div class="brand">Catálogo</div>
+      <div class="brand-sub">lista pessoal privada</div>
     </div>
-  </div>
-</div>
 
-<div class="layout">
-  <div class="sidebar">
-    <div class="form-card">
-      <div class="form-section-label" id="form-section-label">✚ Novo modelo</div>
+    <form id="itemForm">
+      <input type="hidden" id="itemId" />
 
-      <div class="form-field">
-        <label class="form-label">Nome</label>
-        <input class="form-input" id="f-nome" type="text" placeholder="Ex: Maria Silva">
+      <div class="field" style="margin-bottom:14px;">
+        <span class="field-label">Nome</span>
+        <input type="text" id="nomeInput" placeholder="Nome" required />
       </div>
 
-      <div class="form-field">
-        <label class="form-label">Link</label>
-        <input class="form-input" id="f-link" type="url" placeholder="https://...">
+      <div class="field" style="margin-bottom:14px;">
+        <span class="field-label">Link</span>
+        <input type="url" id="linkInput" placeholder="https://..." />
       </div>
 
-      <div class="form-field">
-        <label class="form-label">Foto</label>
-        <div class="photo-upload" id="photo-upload">
-          <input type="file" accept="image/*" id="f-foto-file" onchange="handlePhotoFile(event)">
-          <div id="photo-placeholder">
-            <div class="upload-hint-icon">🖼️</div>
-            <div class="upload-hint">Clica para escolher foto</div>
-          </div>
-          <img id="photo-preview" style="display:none" alt="preview">
-          <button class="photo-remove" id="photo-remove" onclick="removePhoto(event)">✕</button>
+      <div class="field" style="margin-bottom:14px;">
+        <span class="field-label">Foto</span>
+        <label class="upload-zone">
+          <span id="uploadLabel">Clica ou arrasta uma imagem</span>
+          <input type="file" id="fotoInput" accept="image/*" />
+        </label>
+        <img id="previewImg" class="upload-preview" />
+      </div>
+
+      <div class="status-msg" id="statusMsg"></div>
+
+      <div class="form-actions" style="margin-top:6px;">
+        <button type="submit" class="btn btn-primary" id="submitBtn">Adicionar</button>
+        <button type="button" class="btn btn-ghost" id="cancelBtn" style="display:none;">Cancelar</button>
+      </div>
+    </form>
+  </aside>
+
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <div class="main-title">Os teus itens</div>
+        <div class="main-count" id="itemCount">0 itens</div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <input type="text" class="search-input" id="searchInput" placeholder="Procurar por nome..." />
+        <div class="view-toggle">
+          <button type="button" id="gridBtn" class="active">Grade</button>
+          <button type="button" id="listBtn">Lista</button>
         </div>
       </div>
-
-      <div class="form-actions">
-        <button class="btn-primary" id="btn-save" onclick="salvar()">
-          <span id="btn-save-label">Adicionar</span>
-        </button>
-        <button class="btn-secondary hidden" id="btn-cancel" onclick="cancelarEdicao()">Cancelar</button>
-      </div>
     </div>
-  </div>
 
-  <div class="main">
-    <div class="items-count" id="items-count"></div>
-    <div id="items-container"></div>
-  </div>
+    <div id="itemsContainer" class="items grid"></div>
+  </main>
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script>
-// ─────────────────────────────────────────────
-// CONFIG
-// ─────────────────────────────────────────────
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxfvTiUgwewzok-WjTjqLgyJBgYxOdbh8g11qUzrbHhtZ6BuKBJ56zJhWMgjH9Lrj6_Mg/exec';
+/* =========================================================
+   CONFIGURAÇÃO — preenche estes dois valores antes de usar
+   ========================================================= */
+const API_URL = 'https://script.google.com/macros/s/AKfycbx1hfhXNMWG0wSarNX1AinicPuqUh0dnLR7qPMXqEFafc5vOBfP97ACwcKGqFZkKWk/exec';
+const IMGBB_API_KEY = '8b26d95c4f0f6159efda3d59e6843692';
+/* ========================================================= */
 
 let items = [];
-let editingId = null;
-let photoBase64 = null;
 let currentView = 'grid';
+let editingId = null;
 
-// ─────────────────────────────────────────────
-// LISTA — CARREGAR
-// ─────────────────────────────────────────────
-async function carregar() {
-  setSyncing(true);
-  try {
-    const resp = await fetch(`${SCRIPT_URL}?action=list&t=${Date.now()}`);
-    const data = await resp.json();
-    if (data.success && data.items) {
-      items = data.items;
-    } else {
-      items = [];
-    }
-  } catch (e) {
-    showToast('Erro ao carregar da planilha.');
-    items = [];
-  }
-  render();
-  setSyncing(false);
+const form = document.getElementById('itemForm');
+const nomeInput = document.getElementById('nomeInput');
+const linkInput = document.getElementById('linkInput');
+const fotoInput = document.getElementById('fotoInput');
+const previewImg = document.getElementById('previewImg');
+const uploadLabel = document.getElementById('uploadLabel');
+const statusMsg = document.getElementById('statusMsg');
+const submitBtn = document.getElementById('submitBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+const itemsContainer = document.getElementById('itemsContainer');
+const itemCount = document.getElementById('itemCount');
+const searchInput = document.getElementById('searchInput');
+const gridBtn = document.getElementById('gridBtn');
+const listBtn = document.getElementById('listBtn');
+
+let pendingPhotoUrl = '';
+
+function setStatus(msg, type) {
+  statusMsg.textContent = msg || '';
+  statusMsg.className = 'status-msg' + (type ? ' ' + type : '');
 }
 
-// ─────────────────────────────────────────────
-// RENDER
-// ─────────────────────────────────────────────
-function render() {
-  const container = document.getElementById('items-container');
-  const count = document.getElementById('items-count');
+/* ---------- Compressão + upload de imagem ---------- */
+function compressImage(file, maxDim = 800, quality = 0.75) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e) => { img.src = e.target.result; };
+    reader.onerror = reject;
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > height && width > maxDim) {
+        height = Math.round(height * (maxDim / width));
+        width = maxDim;
+      } else if (height > maxDim) {
+        width = Math.round(width * (maxDim / height));
+        height = maxDim;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
-  if (!items.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">✦</div><div>Nenhum modelo ainda.</div><div style="font-size:12px;margin-top:4px">Adiciona o primeiro pelo formulário ao lado.</div></div>`;
-    count.textContent = '';
+async function uploadToImgBB(base64DataUrl) {
+  const base64 = base64DataUrl.split(',')[1];
+  const body = new URLSearchParams();
+  body.append('image', base64);
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+    method: 'POST',
+    body,
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error('Falha no upload para o ImgBB');
+  return data.data.url;
+}
+
+fotoInput.addEventListener('change', async () => {
+  const file = fotoInput.files[0];
+  if (!file) return;
+  try {
+    setStatus('A comprimir e a enviar imagem...');
+    const compressed = await compressImage(file);
+    previewImg.src = compressed;
+    previewImg.style.display = 'block';
+    uploadLabel.textContent = 'Imagem selecionada ✓';
+    const url = await uploadToImgBB(compressed);
+    pendingPhotoUrl = url;
+    setStatus('Imagem carregada com sucesso.', 'success');
+  } catch (err) {
+    setStatus('Erro ao carregar imagem: ' + err.message, 'error');
+  }
+});
+
+/* ---------- API helpers (tudo via GET, evita CORS) ---------- */
+async function apiCall(params) {
+  const url = new URL(API_URL);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v ?? ''));
+  const res = await fetch(url.toString());
+  return res.json();
+}
+
+async function loadItems() {
+  setStatus('A carregar...');
+  try {
+    const data = await apiCall({ action: 'list' });
+    if (!data.ok) throw new Error(data.error || 'Erro desconhecido');
+    items = data.items || [];
+    renderItems();
+    setStatus('');
+  } catch (err) {
+    setStatus('Erro ao carregar dados: ' + err.message, 'error');
+  }
+}
+
+/* ---------- Render ---------- */
+function renderItems() {
+  const query = searchInput.value.trim().toLowerCase();
+  const filtered = items.filter((it) => it.nome.toLowerCase().includes(query));
+
+  itemCount.textContent = `${filtered.length} ${filtered.length === 1 ? 'item' : 'itens'}`;
+  itemsContainer.className = 'items ' + currentView;
+
+  if (filtered.length === 0) {
+    itemsContainer.innerHTML = `
+      <div class="empty-state" style="grid-column: 1/-1;">
+        <div class="glyph">✧</div>
+        <div>Ainda não há itens. Adiciona o primeiro na barra lateral.</div>
+      </div>`;
     return;
   }
 
-  count.textContent = `${items.length} modelo${items.length !== 1 ? 's' : ''}`;
+  itemsContainer.innerHTML = filtered.map((it) => `
+    <div class="card" data-id="${it.id}">
+      ${it.foto
+        ? `<img class="photo" src="${it.foto}" alt="${escapeHtml(it.nome)}" />`
+        : `<div class="photo placeholder">✧</div>`}
+      <div class="card-body">
+        <div>
+          <div class="card-name">${escapeHtml(it.nome)}</div>
+          ${it.link ? `<a class="card-link" href="${escapeAttr(it.link)}" target="_blank" rel="noopener">${escapeHtml(it.link)}</a>` : ''}
+        </div>
+        <div class="card-actions">
+          <button class="icon-btn edit-btn">Editar</button>
+          <button class="icon-btn danger delete-btn">Apagar</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
 
-  if (currentView === 'grid') {
-    container.className = 'items-grid';
-    container.innerHTML = items.map(item => {
-      const hasFoto = item.foto && item.foto !== '' && item.foto !== 'null';
-      return `
-        <div class="item-card">
-          ${hasFoto
-            ? `<img class="card-img" src="${item.foto}" alt="${item.nome}" loading="lazy">`
-            : `<div class="card-img-placeholder">✦</div>`}
-          <div class="card-body">
-            <div class="card-name">${esc(item.nome)}</div>
-            ${item.link ? `<a class="card-link" href="${esc(item.link)}" target="_blank" rel="noopener">${esc(item.link)}</a>` : ''}
-            <div class="card-actions">
-              <button class="card-btn" onclick="editar('${item.id}')">✏️ Editar</button>
-              <button class="card-btn danger" onclick="apagar('${item.id}')">✕</button>
-            </div>
-          </div>
-        </div>`;
-    }).join('');
-  } else {
-    container.className = 'items-list';
-    container.innerHTML = items.map(item => {
-      const hasFoto = item.foto && item.foto !== '' && item.foto !== 'null';
-      return `
-        <div class="item-row">
-          ${hasFoto
-            ? `<img class="row-img" src="${item.foto}" alt="${item.nome}" loading="lazy">`
-            : `<div class="row-img-placeholder">✦</div>`}
-          <div class="row-body">
-            <div class="row-name">${esc(item.nome)}</div>
-            ${item.link ? `<a class="row-link" href="${esc(item.link)}" target="_blank" rel="noopener">${esc(item.link)}</a>` : ''}
-          </div>
-          <div class="row-actions">
-            <button class="row-btn" onclick="editar('${item.id}')">✏️</button>
-            <button class="row-btn danger" onclick="apagar('${item.id}')">✕</button>
-          </div>
-        </div>`;
-    }).join('');
-  }
+  itemsContainer.querySelectorAll('.edit-btn').forEach((btn) =>
+    btn.addEventListener('click', (e) => startEdit(e.target.closest('.card').dataset.id))
+  );
+  itemsContainer.querySelectorAll('.delete-btn').forEach((btn) =>
+    btn.addEventListener('click', (e) => deleteItem(e.target.closest('.card').dataset.id))
+  );
 }
 
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escapeHtml(str) {
+  return (str || '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+function escapeAttr(str) { return escapeHtml(str); }
 
-// ─────────────────────────────────────────────
-// VIEW TOGGLE
-// ─────────────────────────────────────────────
-function setView(v) {
-  currentView = v;
-  document.getElementById('view-grid').className = 'view-btn' + (v==='grid'?' active':'');
-  document.getElementById('view-list').className = 'view-btn' + (v==='list'?' active':'');
-  render();
+/* ---------- Form: criar / editar ---------- */
+function startEdit(id) {
+  const it = items.find((i) => i.id === id);
+  if (!it) return;
+  editingId = id;
+  nomeInput.value = it.nome;
+  linkInput.value = it.link;
+  pendingPhotoUrl = it.foto;
+  previewImg.src = it.foto || '';
+  previewImg.style.display = it.foto ? 'block' : 'none';
+  uploadLabel.textContent = it.foto ? 'Imagem atual (escolhe outra para substituir)' : 'Clica ou arrasta uma imagem';
+  submitBtn.textContent = 'Guardar alterações';
+  cancelBtn.style.display = 'block';
+  setStatus('');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ─────────────────────────────────────────────
-// FOTO — UPLOAD + PREVIEW
-// ─────────────────────────────────────────────
-function handlePhotoFile(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  // Redimensionar para thumbnail antes de converter
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const img = new Image();
-    img.onload = function() {
-      const maxW = 400;
-      let w = img.width, h = img.height;
-      if (w > maxW) { h = h * maxW / w; w = maxW; }
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-      photoBase64 = canvas.toDataURL('image/jpeg', 0.7);
-      showPhotoPreview(photoBase64);
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function showPhotoPreview(src) {
-  const preview = document.getElementById('photo-preview');
-  const placeholder = document.getElementById('photo-placeholder');
-  const upload = document.getElementById('photo-upload');
-  preview.src = src;
-  preview.style.display = 'block';
-  placeholder.style.display = 'none';
-  upload.classList.add('has-photo');
-}
-
-function removePhoto(e) {
-  e.stopPropagation();
-  photoBase64 = null;
-  const preview = document.getElementById('photo-preview');
-  const placeholder = document.getElementById('photo-placeholder');
-  const upload = document.getElementById('photo-upload');
-  preview.style.display = 'none';
-  preview.src = '';
-  placeholder.style.display = '';
-  upload.classList.remove('has-photo');
-  document.getElementById('f-foto-file').value = '';
-}
-
-// ─────────────────────────────────────────────
-// SALVAR (criar ou editar)
-// ─────────────────────────────────────────────
-async function salvar() {
-  const nome = document.getElementById('f-nome').value.trim();
-  const link = document.getElementById('f-link').value.trim();
-
-  if (!nome) { showToast('O nome é obrigatório.'); return; }
-
-  document.getElementById('btn-save').disabled = true;
-  setSyncing(true);
-
-  try {
-    const payload = {
-      action: editingId ? 'edit' : 'create',
-      nome,
-      link,
-      foto: photoBase64 || ''
-    };
-    if (editingId) payload.id = editingId;
-
-    // POST para enviar base64 (pode ser grande)
-    const resp = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const result = await resp.json();
-
-    if (result.success) {
-      showToast(editingId ? 'Actualizado!' : 'Adicionado!');
-      limparForm();
-      await carregar();
-    } else {
-      showToast('Erro: ' + (result.error || 'tenta novamente.'));
-    }
-  } catch (e) {
-    showToast('Erro de ligação à planilha.');
-  }
-
-  document.getElementById('btn-save').disabled = false;
-  setSyncing(false);
-}
-
-// ─────────────────────────────────────────────
-// EDITAR
-// ─────────────────────────────────────────────
-function editar(id) {
-  const item = items.find(i => String(i.id) === String(id));
-  if (!item) { showToast('Item não encontrado.'); return; }
-
-  editingId = item.id;
-  document.getElementById('f-nome').value = item.nome || '';
-  document.getElementById('f-link').value = item.link || '';
-
-  if (item.foto && item.foto !== '' && item.foto !== 'null') {
-    photoBase64 = item.foto;
-    showPhotoPreview(item.foto);
-  } else {
-    removePhoto({ stopPropagation: () => {} });
-  }
-
-  document.getElementById('form-section-label').textContent = '✏️ Editar modelo';
-  document.getElementById('form-section-label').classList.add('editing');
-  document.getElementById('btn-save-label').textContent = 'Guardar';
-  document.getElementById('btn-cancel').classList.remove('hidden');
-
-  // Scroll ao formulário
-  document.querySelector('.sidebar').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function cancelarEdicao() {
-  limparForm();
-}
-
-function limparForm() {
+function resetForm() {
   editingId = null;
-  document.getElementById('f-nome').value = '';
-  document.getElementById('f-link').value = '';
-  removePhoto({ stopPropagation: () => {} });
-  document.getElementById('form-section-label').textContent = '✚ Novo modelo';
-  document.getElementById('form-section-label').classList.remove('editing');
-  document.getElementById('btn-save-label').textContent = 'Adicionar';
-  document.getElementById('btn-cancel').classList.add('hidden');
+  form.reset();
+  pendingPhotoUrl = '';
+  previewImg.src = '';
+  previewImg.style.display = 'none';
+  uploadLabel.textContent = 'Clica ou arrasta uma imagem';
+  submitBtn.textContent = 'Adicionar';
+  cancelBtn.style.display = 'none';
+  setStatus('');
 }
 
-// ─────────────────────────────────────────────
-// APAGAR
-// ─────────────────────────────────────────────
-async function apagar(id) {
-  if (!confirm('Remover este modelo?')) return;
-  setSyncing(true);
+cancelBtn.addEventListener('click', resetForm);
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const nome = nomeInput.value.trim();
+  if (!nome) return;
+
+  submitBtn.disabled = true;
+  setStatus(editingId ? 'A guardar alterações...' : 'A adicionar...');
+
   try {
-    const resp = await fetch(`${SCRIPT_URL}?action=delete&id=${encodeURIComponent(id)}&t=${Date.now()}`);
-    const result = await resp.json();
-    if (result.success) {
-      showToast('Removido.');
-      if (String(editingId) === String(id)) limparForm();
-      await carregar();
+    if (editingId) {
+      const data = await apiCall({
+        action: 'update',
+        id: editingId,
+        nome,
+        link: linkInput.value.trim(),
+        foto: pendingPhotoUrl,
+      });
+      if (!data.ok) throw new Error(data.error);
+      setStatus('Atualizado com sucesso.', 'success');
     } else {
-      showToast('Erro ao remover.');
+      const data = await apiCall({
+        action: 'create',
+        nome,
+        link: linkInput.value.trim(),
+        foto: pendingPhotoUrl,
+      });
+      if (!data.ok) throw new Error(data.error);
+      setStatus('Adicionado com sucesso.', 'success');
     }
-  } catch (e) {
-    showToast('Erro ao remover.');
+    resetForm();
+    await loadItems();
+  } catch (err) {
+    setStatus('Erro: ' + err.message, 'error');
+  } finally {
+    submitBtn.disabled = false;
   }
-  setSyncing(false);
+});
+
+async function deleteItem(id) {
+  if (!confirm('Tens a certeza que queres apagar este item?')) return;
+  try {
+    const data = await apiCall({ action: 'delete', id });
+    if (!data.ok) throw new Error(data.error);
+    await loadItems();
+  } catch (err) {
+    setStatus('Erro ao apagar: ' + err.message, 'error');
+  }
 }
 
-// ─────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────
-function setSyncing(s) {
-  document.getElementById('sync-dot').className = 'sync-dot' + (s ? ' syncing' : '');
-  document.getElementById('sync-label').textContent = s ? 'A sincronizar...' : 'Planilha';
-}
+/* ---------- Vista grade/lista + pesquisa ---------- */
+gridBtn.addEventListener('click', () => { currentView = 'grid'; gridBtn.classList.add('active'); listBtn.classList.remove('active'); renderItems(); });
+listBtn.addEventListener('click', () => { currentView = 'list'; listBtn.classList.add('active'); gridBtn.classList.remove('active'); renderItems(); });
+searchInput.addEventListener('input', renderItems);
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-// ─────────────────────────────────────────────
-// INIT
-// ─────────────────────────────────────────────
-window.onload = carregar;
+/* ---------- Init ---------- */
+loadItems();
 </script>
 </body>
 </html>
